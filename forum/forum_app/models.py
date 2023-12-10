@@ -1,3 +1,6 @@
-from django.db import models
+import uuid
+from djongo import models
 
-# Create your models here.
+
+class Categories(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
