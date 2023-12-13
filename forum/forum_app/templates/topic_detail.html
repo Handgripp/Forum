@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <ul>
-        {% for topic in topics %}
-            <li>{{ topic.title }}</li>
-        {% endfor %}
-    </ul>
+    {% for topic_with_posts in topics_with_posts %}
+        <div class="topic-container">
+            <h2>{{ topic_with_posts.topic.title }}</h2>
+        </div>
+
+        <div class="posts-container">
+            <ul>
+                {% for post in topic_with_posts.posts %}
+                    <li class="post-container">
+                        <h4>{{ post.title }}</h4>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
 {% endblock %}
