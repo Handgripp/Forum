@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Forum</title>
+    <title>Forum Login</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -29,26 +28,46 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        a {
-            text-decoration: none;
-            color: #51c46d;
-        }
-
         .login-container {
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
+        h2 {
+            margin: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            background-color: #51c46d;
+            color: white;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h1>Forum</h1>
+    <h1>Forum Login</h1>
     <div id="container">
         <h2>Login</h2>
-        <a href="{% url 'login' %}">Log in</a>
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
 
-        <h2>You do not have an account? register</h2>
-        <a href="{% url 'register' %}">Register</a>
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+
+            <input type="submit" value="Log in">
+        </form>
     </div>
 </body>
 </html>

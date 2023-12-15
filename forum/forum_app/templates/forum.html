@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Forum</title>
     <style>
         body {
@@ -21,7 +20,7 @@
             margin: 0;
         }
 
-        #container {
+        #content {
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
@@ -29,26 +28,36 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        a {
-            text-decoration: none;
-            color: #51c46d;
+        .topic-container {
+            background-color: #e0f7fa;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
         }
 
-        .login-container {
-            padding: 20px;
+        .post-container {
+            background-color: #fafafa;
+            padding: 8px;
+            margin-bottom: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
         }
     </style>
 </head>
 <body>
     <h1>Forum</h1>
-    <div id="container">
-        <h2>Login</h2>
-        <a href="{% url 'login' %}">Log in</a>
 
-        <h2>You do not have an account? register</h2>
-        <a href="{% url 'register' %}">Register</a>
+    <div id="content">
+        {% block content %}{% endblock %}
     </div>
 </body>
 </html>
