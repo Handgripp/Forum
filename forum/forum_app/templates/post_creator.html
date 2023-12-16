@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Posts</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            background-color: #61dafb;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-container {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            background-color: #51c46d;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Forum Register</h1>
+    <div id="container" class="post-container">
+        <h2>Create new post</h2>
+        <form action="{% url 'post_creator' topic_id=topic_id %}" method="post">
+            {% csrf_token %}
+            <label for="title">Title:</label>
+            <input type="text" name="title" required>
+
+            <label for="content">Content:</label>
+            <input type="text" name="content" required>
+
+            <button type="submit">Create</button>
+        </form>
+        <a href="{% url 'topic_detail'%}">Return</a>
+    </div>
+</body>
+</html>

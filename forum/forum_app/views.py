@@ -4,7 +4,9 @@ from .models import Topic, Post
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+import logging
 
+logger = logging.getLogger(__name__)
 
 def topic_detail(request):
     topics = Topic.objects.all()
@@ -12,9 +14,10 @@ def topic_detail(request):
 
     for topic in topics:
         posts = Post.objects.filter(topic_id=str(topic._id))
-        topic_with_posts.append({'topic': topic, 'posts': posts})
+        topic_with_posts.append({'topic_id': str(topic._id), 'topic': topic, 'posts': posts})
 
     return render(request, 'topic_detail.html', {'topics_with_posts': topic_with_posts})
+
 
 
 def base(request):
@@ -46,10 +49,7 @@ def register_view(request):
 
         User = get_user_model()
 
-        if User.objects.filter(
-            username=username,
-            email=email
-        ).exists():
+        if User.objects.filter(username=username,email=email).exists():
             return render(request, 'register.html', {
                 'error': 'The username or email address already exists'
             })
@@ -68,3 +68,23 @@ def register_view(request):
             })
     else:
         return render(request, 'register.html')
+
+
+def post_creator(request, topic_id):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        if title and content:
+            post = Post(topic_id=topic_id, title=title, content=content)
+            post.save()
+            return redirect('topic_detail')
+        else:
+
+            error_message = "Both title and content are required."
+            context = {'topic_id': topic_id, 'error_message': error_message}
+            return render(request, 'post_creator.html', context)
+
+    context = {'topic_id': topic_id}
+    return render(request, 'post_creator.html', context)
+
+
