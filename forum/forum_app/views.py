@@ -1,8 +1,9 @@
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from .models import Topic, Post
-from django.contrib.auth import login
-from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 
 
 def topic_detail(request):
@@ -25,19 +26,16 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        user = User.objects.get(username=username)
-
-        print(user)
-
-        if user is not None and user.check_password(password):
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
             login(request, user)
+            messages.success(request, ("You have been logged in"))
             return redirect('topic_detail')
         else:
-            return render(request, 'login.html', {
-                'error': 'Bad login or password'
-            })
+            messages.success(request, ("There was an error"))
+            return redirect('login')
     else:
-        return render(request, 'login.html', {})
+        return render(request, 'login.html',{})
 
 
 def register_view(request):
@@ -45,6 +43,8 @@ def register_view(request):
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
+
+        User = get_user_model()
 
         if User.objects.filter(
             username=username,
@@ -54,8 +54,7 @@ def register_view(request):
                 'error': 'The username or email address already exists'
             })
 
-        user = User(username=username, email=email, password=password)
-        user.save()
+        user = User.objects.create_user(username=username, email=email, password=password)
 
         user.last_login = timezone.now()
         user.save(update_fields=["last_login"])
