@@ -4,10 +4,10 @@ from .models import Topic, Post
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-import logging
+from django.contrib.auth.decorators import login_required
 
-logger = logging.getLogger(__name__)
 
+@login_required()
 def topic_detail(request):
     topics = Topic.objects.all()
     topic_with_posts = []
@@ -31,14 +31,16 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            request.session.set_expiry(600)
             login(request, user)
-            messages.success(request, ("You have been logged in"))
+            messages.success(request, "You have been logged in")
+
             return redirect('topic_detail')
         else:
-            messages.success(request, ("There was an error"))
+            messages.success(request, "There was an error")
             return redirect('login')
     else:
-        return render(request, 'login.html',{})
+        return render(request, 'login.html', {})
 
 
 def register_view(request):
@@ -70,6 +72,7 @@ def register_view(request):
         return render(request, 'register.html')
 
 
+@login_required()
 def post_creator(request, topic_id):
     if request.method == 'POST':
         title = request.POST.get('title')

@@ -48,9 +48,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+USE_SESSIONS = True
+
 ROOT_URLCONF = 'forum.urls'
+
+LOGIN_URL = 'base'
 
 TEMPLATES = [
     {
