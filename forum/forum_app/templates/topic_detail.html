@@ -7,7 +7,7 @@
         </div>
 
         <div class="posts-container">
-            <a href="{% url 'post_creator' topic_id=topic_with_posts.topic_id %}">Create new post</a>
+            <a href="{% url 'post_creator' topic_id=topic_with_posts.topic_id %}" class="create-post-btn">Create new post</a>
 
             <ul>
                 {% for post in topic_with_posts.posts %}
