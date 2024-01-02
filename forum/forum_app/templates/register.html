@@ -92,6 +92,11 @@
         Ferrari Forum Register
         <img id="logo2" src="https://pngimg.com/uploads/ferrari/ferrari_PNG10665.png" alt="Ferrari Logo">
     </h1>
+
+    {% for msg in messages %}
+        {{ msg }}
+    {% endfor %}
+
     <div id="container" class="register-container">
         <h2>Register</h2>
         <form action="{% url 'register' %}" method="post">

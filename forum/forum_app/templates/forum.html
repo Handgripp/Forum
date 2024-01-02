@@ -85,6 +85,10 @@
         <img id="logo2" src="https://pngimg.com/uploads/ferrari/ferrari_PNG10665.png" alt="Ferrari Logo">
     </h1>
 
+    {% for msg in messages %}
+        {{ msg }}
+    {% endfor %}
+
     <div id="content">
         {% block content %}{% endblock %}
     </div>

@@ -1,23 +1,22 @@
-from django.utils import timezone
 from django.shortcuts import render, redirect
-from .models import Topic, Post
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from ..repository.user_repository import UserRepository
+from ..repository.post_repository import PostRepository
+from ..repository.topic_repository import TopicRepository
 
 
 @login_required()
 def topic_detail(request):
-    topics = Topic.objects.all()
+    topics = TopicRepository.get_all()
     topic_with_posts = []
 
     for topic in topics:
-        posts = Post.objects.filter(topic_id=str(topic._id))
+        posts = TopicRepository.filter_posts_by_topic_id(str(topic._id))
         topic_with_posts.append({'topic_id': str(topic._id), 'topic': topic, 'posts': posts})
 
     return render(request, 'topic_detail.html', {'topics_with_posts': topic_with_posts})
-
 
 
 def base(request):
@@ -44,32 +43,35 @@ def login_view(request):
 
 
 def register_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+    try:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            password = request.POST.get('password')
 
-        User = get_user_model()
+            user_from_db = UserRepository.get_all()
 
-        if User.objects.filter(username=username,email=email).exists():
-            return render(request, 'register.html', {
-                'error': 'The username or email address already exists'
-            })
+            if user_from_db.objects.filter(username=username).exists():
+                return render(request, 'register.html', {
+                    'error': 'The username or email address already exists'
+                })
 
-        user = User.objects.create_user(username=username, email=email, password=password)
+            user = UserRepository.create(username, email, password)
 
-        user.last_login = timezone.now()
-        user.save(update_fields=["last_login"])
-
-        if user:
-            login(request, user)
-            return redirect('topic_detail')
+            if user:
+                login(request, user)
+                messages.success(request, "You create account successfully")
+                return redirect('topic_detail')
+            else:
+                return render(request, 'register.html', {
+                    'error': 'Failed to create user'
+                })
         else:
-            return render(request, 'register.html', {
-                'error': 'Failed to create user'
-            })
-    else:
-        return render(request, 'register.html')
+            return render(request, 'register.html')
+    except Exception as e:
+        return render(request, 'register.html', {
+            'error': f'{e}'
+        })
 
 
 @login_required()
@@ -78,8 +80,8 @@ def post_creator(request, topic_id):
         title = request.POST.get('title')
         content = request.POST.get('content')
         if title and content:
-            post = Post(topic_id=topic_id, title=title, content=content)
-            post.save()
+            PostRepository.create(topic_id, title, content)
+            messages.success(request, "You create post successfully")
             return redirect('topic_detail')
         else:
 
@@ -89,5 +91,3 @@ def post_creator(request, topic_id):
 
     context = {'topic_id': topic_id}
     return render(request, 'post_creator.html', context)
-
-
