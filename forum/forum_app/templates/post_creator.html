@@ -105,6 +105,13 @@
         Ferrari Forum Posts
         <img id="logo2" src="https://pngimg.com/uploads/ferrari/ferrari_PNG10665.png" alt="Ferrari Logo">
     </h1>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <div id="container" class="post-container">
         <h2>Create new post</h2>
         <form action="{% url 'post_creator' topic_id=topic_id %}" method="post">

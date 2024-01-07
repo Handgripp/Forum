@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
@@ -43,35 +44,35 @@ def login_view(request):
 
 
 def register_view(request):
-    try:
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            email = request.POST.get('email')
-            password = request.POST.get('password')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-            user_from_db = UserRepository.get_all()
+        exists_email = User.objects.filter(email=email)
 
-            if user_from_db.objects.filter(username=username).exists():
-                return render(request, 'register.html', {
-                    'error': 'The username or email address already exists'
-                })
+        if len(exists_email) > 0:
+            messages.error(request, "The email address already exists")
+            return redirect('register')
 
-            user = UserRepository.create(username, email, password)
+        exists_username = User.objects.filter(username=username)
 
-            if user:
-                login(request, user)
-                messages.success(request, "You create account successfully")
-                return redirect('topic_detail')
-            else:
-                return render(request, 'register.html', {
-                    'error': 'Failed to create user'
-                })
+        if len(exists_username) > 0:
+            messages.error(request, "The username already exists")
+            return redirect('register')
+
+        user = UserRepository.create(username, email, password)
+
+        if user:
+            login(request, user)
+            messages.success(request, "You create account successfully")
+            return redirect('topic_detail')
         else:
-            return render(request, 'register.html')
-    except Exception as e:
-        return render(request, 'register.html', {
-            'error': f'{e}'
-        })
+            messages.error(request, "The username or email address already exists")
+            return redirect('register')
+    else:
+        return render(request, 'register.html')
+
 
 
 @login_required()

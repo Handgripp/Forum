@@ -76,6 +76,7 @@
             height: auto;
             margin: 0 10px;
         }
+
     </style>
 </head>
 <body>
@@ -85,9 +86,13 @@
         <img id="logo2" src="https://pngimg.com/uploads/ferrari/ferrari_PNG10665.png" alt="Ferrari Logo">
     </h1>
 
-    {% for msg in messages %}
-        {{ msg }}
-    {% endfor %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
     <div id="content">
         {% block content %}{% endblock %}

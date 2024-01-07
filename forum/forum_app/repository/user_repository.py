@@ -7,7 +7,7 @@ class UserRepository:
     @staticmethod
     def get_all():
         User = get_user_model()
-        return User
+        return User.objects.all()
 
     @staticmethod
     def create(username, email, password):
