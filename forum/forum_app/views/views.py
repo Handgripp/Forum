@@ -79,6 +79,10 @@ def post_creator(request, topic_id):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
+        topic = TopicRepository.get_one(topic_id)
+        if topic is None:
+            messages.error(request, "You cannot add a post, the topic does not exist")
+            return redirect('topic_detail')
         if title and content:
             PostRepository.create(topic_id, title, content)
             messages.success(request, "You create post successfully")
@@ -86,6 +90,7 @@ def post_creator(request, topic_id):
         else:
 
             error_message = "Both title and content are required."
+            messages.error(request, f"{error_message}")
             context = {'topic_id': topic_id, 'error_message': error_message}
             return render(request, 'post_creator.html', context)
 
