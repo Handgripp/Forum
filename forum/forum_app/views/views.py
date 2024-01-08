@@ -74,7 +74,6 @@ def register_view(request):
         return render(request, 'register.html')
 
 
-
 @login_required()
 def post_creator(request, topic_id):
     if request.method == 'POST':
