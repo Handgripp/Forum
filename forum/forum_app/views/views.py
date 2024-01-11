@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from ..repository.user_repository import UserRepository
 from ..repository.post_repository import PostRepository
 from ..repository.topic_repository import TopicRepository
+from ..repository.comment_repository import CommentRepository
 
 
 @login_required()
@@ -15,9 +16,11 @@ def topic_detail(request):
 
     for topic in topics:
         posts = TopicRepository.filter_posts_by_topic_id(str(topic._id))
+        for post in posts:
+            post_id = post._id
         topic_with_posts.append({'topic_id': str(topic._id), 'topic': topic, 'posts': posts})
 
-    return render(request, 'topic_detail.html', {'topics_with_posts': topic_with_posts})
+    return render(request, 'topic_detail.html', {'topics_with_posts': topic_with_posts, 'post_id': post_id})
 
 
 def base(request):
@@ -84,7 +87,8 @@ def post_creator(request, topic_id):
             messages.error(request, "You cannot add a post, the topic does not exist")
             return redirect('topic_detail')
         if title and content:
-            PostRepository.create(topic_id, title, content)
+            post = PostRepository.create(topic_id, title)
+            CommentRepository.create(post, content)
             messages.success(request, "You create post successfully")
             return redirect('topic_detail')
         else:
@@ -96,3 +100,18 @@ def post_creator(request, topic_id):
 
     context = {'topic_id': topic_id}
     return render(request, 'post_creator.html', context)
+
+
+@login_required()
+def post_detail(request, post_id):
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        CommentRepository.create(post_id, text)
+
+        return redirect('post_detail', post_id=post_id)
+    else:
+        post = PostRepository.get_post(post_id)
+        comments = CommentRepository.get_all(post_id)
+
+    return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'post_id': post_id})
+

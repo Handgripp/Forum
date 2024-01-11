@@ -9,6 +9,11 @@ class Topic(models.Model):
 
 class Post(models.Model):
     _id = models.ObjectIdField()
-    topic_id = models.CharField(max_length=255)
+    topic_id = models.CharField(max_length=20)
     title = models.CharField(max_length=255)
-    content = models.TextField()
+
+
+class Comment(models.Model):
+    _id = models.ObjectIdField()
+    post_id = models.CharField(max_length=20)
+    text = models.CharField(max_length=255)

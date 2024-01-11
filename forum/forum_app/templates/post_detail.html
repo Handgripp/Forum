@@ -1,0 +1,25 @@
+{% extends 'forum.html' %}
+
+{% block content %}
+    <div class="post-detail-container">
+        <h2>{{ post.title }}</h2>
+
+        <div class="comments-container">
+            <ul>
+                {% for comment in comments %}
+                    <li class="comment-container">
+                        <p>{{ comment.text }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <form action="{% url 'post_detail' post_id=post_id %}" method="post">
+            {% csrf_token %}
+            <label for="text">Comment:</label>
+            <textarea name="text" required></textarea>
+            <button type="submit">Add comment</button>
+        </form>
+    </div>
+{% endblock %}
+

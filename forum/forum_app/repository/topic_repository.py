@@ -1,5 +1,5 @@
 from ..models import Topic, Post
-
+from bson import ObjectId
 
 class TopicRepository:
     @staticmethod
@@ -9,7 +9,7 @@ class TopicRepository:
 
     @staticmethod
     def get_one(topic_id):
-        topic = Topic.objects.filter(_id=topic_id)
+        topic = Topic.objects.filter(_id=ObjectId(topic_id))
         return topic
 
     @staticmethod
