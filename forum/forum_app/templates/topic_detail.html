@@ -12,6 +12,7 @@
             <ul>
                 {% for post in topic_with_posts.posts %}
                     <li class="post-container">
+                        <p>Added at: {{ post.created_at|date:"d.m.Y H:i" }}</p>
                         <h4>
                             <a href="{% url 'post_detail' post_id=post_id %}">{{ post.title }}</a>
                         </h4>

@@ -88,8 +88,8 @@ def post_creator(request, topic_id):
         if title and content:
             if request.user.is_authenticated:
                 user = UserRepository.get_one(request.user.username)
-                post = PostRepository.create(topic_id, title, str(user.id))
-                CommentRepository.create(post, content, str(user.id))
+                post = PostRepository.create(topic_id, title, str(user._id))
+                CommentRepository.create(post, content, str(user._id))
                 messages.success(request, "You create post successfully")
                 return redirect('topic_detail')
         else:

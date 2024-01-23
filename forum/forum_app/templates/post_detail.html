@@ -8,7 +8,7 @@
             <ul>
                 {% for comment in comments %}
                     <li class="comment-container">
-                        <p class="comment-meta">Added: {{comment.user.username}} Created at: {{comment.created_at|date:"d.m.Y H:i"}}</p>
+                        <p class="comment-meta">Added by: {{comment.user.username}}, Added at: {{comment.created_at|date:"d.m.Y H:i"}}</p>
                         <p>{{ comment.text }} </p>
                     </li>
                 {% endfor %}
