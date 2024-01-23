@@ -1,8 +1,21 @@
+from bson import ObjectId
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 
 class UserRepository:
+
+    @staticmethod
+    def get_one(username):
+        User = get_user_model()
+        user = User.objects.get(username=username)
+        return user
+
+    @staticmethod
+    def get_one_with_id(user_id):
+        User = get_user_model()
+        user = User.objects.get(_id=ObjectId(user_id))
+        return user
 
     @staticmethod
     def get_all():

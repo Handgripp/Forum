@@ -5,8 +5,8 @@ from ..models import Post
 
 class PostRepository:
     @staticmethod
-    def create(topic_id, title):
-        post = Post(topic_id=topic_id, title=title)
+    def create(topic_id, title, user_id):
+        post = Post(topic_id=topic_id, title=title, user_id=user_id)
         post.save()
         return post._id
 

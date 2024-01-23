@@ -1,6 +1,5 @@
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from ..repository.user_repository import UserRepository
@@ -52,13 +51,13 @@ def register_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        exists_email = User.objects.filter(email=email)
+        exists_email = get_user_model().objects.filter(email=email)
 
         if len(exists_email) > 0:
             messages.error(request, "The email address already exists")
             return redirect('register')
 
-        exists_username = User.objects.filter(username=username)
+        exists_username = get_user_model().objects.filter(username=username)
 
         if len(exists_username) > 0:
             messages.error(request, "The username already exists")
@@ -87,10 +86,12 @@ def post_creator(request, topic_id):
             messages.error(request, "You cannot add a post, the topic does not exist")
             return redirect('topic_detail')
         if title and content:
-            post = PostRepository.create(topic_id, title)
-            CommentRepository.create(post, content)
-            messages.success(request, "You create post successfully")
-            return redirect('topic_detail')
+            if request.user.is_authenticated:
+                user = UserRepository.get_one(request.user.username)
+                post = PostRepository.create(topic_id, title, str(user.id))
+                CommentRepository.create(post, content, str(user.id))
+                messages.success(request, "You create post successfully")
+                return redirect('topic_detail')
         else:
 
             error_message = "Both title and content are required."
@@ -106,12 +107,19 @@ def post_creator(request, topic_id):
 def post_detail(request, post_id):
     if request.method == 'POST':
         text = request.POST.get('text')
-        CommentRepository.create(post_id, text)
 
-        return redirect('post_detail', post_id=post_id)
+        if request.user.is_authenticated:
+            user = UserRepository.get_one(request.user.username)
+            CommentRepository.create(post_id, text, str(user._id))
+            return redirect('post_detail', post_id=post_id)
+        else:
+            messages.error(request, "Error with session")
+            return redirect('post_detail')
     else:
         post = PostRepository.get_post(post_id)
         comments = CommentRepository.get_all(post_id)
+        for comment in comments:
+            comment.user = UserRepository.get_one_with_id(comment.user_id)
 
     return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'post_id': post_id})
 

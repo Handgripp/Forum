@@ -58,7 +58,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 ROOT_URLCONF = 'forum.urls'
 
 LOGIN_URL = 'base'
-
+AUTH_USER_MODEL = 'forum_app.CustomUser'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
