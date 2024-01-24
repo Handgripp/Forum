@@ -64,6 +64,14 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'austin.hane20@ethereal.email'
 EMAIL_HOST_PASSWORD = '7p8cRMpPvc5ufTtjYf'
 
+CELERY_BROKER_URL = 'redis://forum_redis_1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://forum_redis_1:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+
 
 LOGIN_URL = 'base'
 AUTH_USER_MODEL = 'forum_app.CustomUser'

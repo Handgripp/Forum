@@ -7,7 +7,9 @@ from ..repository.post_repository import PostRepository
 from ..repository.topic_repository import TopicRepository
 from ..repository.comment_repository import CommentRepository
 from django.conf import settings
-from django.core.mail import send_mail
+from ..tasks import send_async_email
+
+
 
 @login_required()
 def topic_detail(request):
@@ -73,7 +75,7 @@ def register_view(request):
             message = f'Hi {user.username}, thank you for registering in ferrari forum'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = ['austin.hane20@ethereal.email']
-            send_mail(subject, message, email_from, recipient_list)
+            send_async_email.delay(subject, message, email_from, recipient_list)
             return redirect('topic_detail')
         else:
             messages.error(request, "The username or email address already exists")
@@ -128,4 +130,3 @@ def post_detail(request, post_id):
             comment.user = UserRepository.get_one_with_id(comment.user_id)
 
     return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'post_id': post_id})
-

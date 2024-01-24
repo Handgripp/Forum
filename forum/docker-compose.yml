@@ -7,7 +7,28 @@ services:
       - "8000:8000"
     depends_on:
       - mongo
+      - celery
   mongo:
     image: "mongo:latest"
     ports:
       - "27017:27017"
+
+  celery:
+    build: .
+    command: celery -A forum_app.tasks worker -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  flower:
+    image: "mher/flower:latest"
+    ports:
+      - "5555:5555"
+    environment:
+      CELERY_BROKER_URL: redis://forum_redis_1:6379/0
