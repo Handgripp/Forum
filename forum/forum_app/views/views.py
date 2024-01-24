@@ -6,7 +6,8 @@ from ..repository.user_repository import UserRepository
 from ..repository.post_repository import PostRepository
 from ..repository.topic_repository import TopicRepository
 from ..repository.comment_repository import CommentRepository
-
+from django.conf import settings
+from django.core.mail import send_mail
 
 @login_required()
 def topic_detail(request):
@@ -68,6 +69,11 @@ def register_view(request):
         if user:
             login(request, user)
             messages.success(request, "You create account successfully")
+            subject = 'welcome to ferrari forum'
+            message = f'Hi {user.username}, thank you for registering in ferrari forum'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = ['austin.hane20@ethereal.email']
+            send_mail(subject, message, email_from, recipient_list)
             return redirect('topic_detail')
         else:
             messages.error(request, "The username or email address already exists")

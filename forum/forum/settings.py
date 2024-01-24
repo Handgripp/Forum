@@ -57,6 +57,14 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 ROOT_URLCONF = 'forum.urls'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.ethereal.email'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'austin.hane20@ethereal.email'
+EMAIL_HOST_PASSWORD = '7p8cRMpPvc5ufTtjYf'
+
+
 LOGIN_URL = 'base'
 AUTH_USER_MODEL = 'forum_app.CustomUser'
 TEMPLATES = [
