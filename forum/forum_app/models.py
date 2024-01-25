@@ -4,9 +4,11 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     _id = models.ObjectIdField()
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
+
 
 class Topic(models.Model):
     _id = models.ObjectIdField()

@@ -35,17 +35,21 @@ def login_view(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-        if user is not None:
-            request.session.set_expiry(600)
-            login(request, user)
-            messages.success(request, "You have been logged in")
-
-            return redirect('topic_detail')
-        else:
-            messages.success(request, "There was an error")
+        user_from_db = UserRepository.get_one(username)
+        if user_from_db.is_active is False:
+            messages.error(request, "Your account is not active. Please confirm your email.")
             return redirect('login')
+        else:
+            if user is not None:
+                request.session.set_expiry(600)
+                login(request, user)
+                messages.success(request, "You have been logged in")
+                return redirect('topic_detail')
+            else:
+                messages.error(request, "Invalid username or password.")
+                return redirect('login')
     else:
-        return render(request, 'login.html', {})
+        return render(request, 'base.html', {})
 
 
 def register_view(request):
