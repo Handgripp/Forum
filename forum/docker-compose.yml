@@ -8,6 +8,8 @@ services:
     depends_on:
       - mongo
       - celery
+    volumes:
+      - ./.env:/app/.env
   mongo:
     image: "mongo:latest"
     ports:
@@ -18,6 +20,7 @@ services:
     command: celery -A forum_app.tasks worker -l info
     volumes:
       - .:/app
+      - ./.env:/app/.env
     depends_on:
       - redis
 
@@ -31,4 +34,4 @@ services:
     ports:
       - "5555:5555"
     environment:
-      CELERY_BROKER_URL: redis://forum_redis_1:6379/0
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
