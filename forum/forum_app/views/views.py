@@ -1,14 +1,31 @@
+from datetime import datetime, timedelta
+import jwt
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view
 from ..repository.user_repository import UserRepository
 from ..repository.post_repository import PostRepository
 from ..repository.topic_repository import TopicRepository
 from ..repository.comment_repository import CommentRepository
 from django.conf import settings
 from ..tasks import send_async_email
+from decouple import config
 
+
+def create_confirmation_token(user):
+    expiration_time = datetime.utcnow() + timedelta(hours=48)
+
+    payload = {
+        'user_id': str(user._id),
+        'username': user.username,
+        'email': user.email,
+        'exp': expiration_time,
+    }
+
+    token = jwt.encode(payload, config("SECRET_KEY"), algorithm='HS256')
+    return token
 
 
 @login_required()
@@ -74,9 +91,11 @@ def register_view(request):
 
         if user:
             login(request, user)
-            messages.success(request, "You create account successfully")
-            subject = 'welcome to ferrari forum'
-            message = f'Hi {user.username}, thank you for registering in ferrari forum'
+            messages.success(request, "You create account successfully, confirm your account by clicking the link in your mail")
+            confirmation_token = create_confirmation_token(user)
+            activation_link = f'http://127.0.0.1:8000/confirm-account/?token={confirmation_token}'
+            subject = 'Welcome to Ferrari Forum'
+            message = f'Hi {user.username}, thank you for registering in Ferrari Forum. Please confirm your account by clicking the link below:\n\n{activation_link}'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = ['austin.hane20@ethereal.email']
             send_async_email.delay(subject, message, email_from, recipient_list)
@@ -134,3 +153,31 @@ def post_detail(request, post_id):
             comment.user = UserRepository.get_one_with_id(comment.user_id)
 
     return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'post_id': post_id})
+
+
+@api_view(['GET'])
+def confirm_account(request):
+    token = request.query_params.get('token', None)
+
+    if not token:
+        messages.error(request, "Token not provided")
+        return redirect('base')
+
+    try:
+        payload = jwt.decode(token, config("SECRET_KEY"), algorithms=['HS256'])
+        user = UserRepository.get_one_with_id(payload['user_id'])
+    except jwt.ExpiredSignatureError:
+        messages.error(request, "Token has expired")
+        return redirect('base')
+    except jwt.InvalidTokenError:
+        messages.error(request, "Invalid token")
+        return redirect('base')
+
+    if not user.is_active:
+        user.is_active = True
+        user.save()
+        messages.success(request, "Account confirmed successfully, please login in below")
+        return redirect('base')
+    else:
+        messages.success(request, "Account already confirmed, please login in below")
+        return redirect('base')
