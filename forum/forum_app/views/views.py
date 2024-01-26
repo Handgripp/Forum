@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 import jwt
+from django.contrib.auth.password_validation import validate_password
+from django.forms import forms
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib import messages
@@ -74,6 +76,14 @@ def register_view(request):
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
+
+        try:
+            validate_password(password)
+        except forms.ValidationError as errors:
+            for error in errors:
+                messages.error(request, f"{error}")
+
+            return redirect('register')
 
         exists_email = get_user_model().objects.filter(email=email)
 
