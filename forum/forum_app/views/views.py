@@ -56,7 +56,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         user_from_db = UserRepository.get_one(username)
         if user_from_db.is_active is False:
-            messages.error(request, "Your account is not active. Please confirm your email.")
+            messages.error(request, "Your account is not active. Please click on the link in your email.")
             return redirect('login')
         else:
             if user is not None:
@@ -184,8 +184,7 @@ def confirm_account(request):
         return redirect('base')
 
     if not user.is_active:
-        user.is_active = True
-        user.save()
+        UserRepository.change_to_active(user._id)
         messages.success(request, "Account confirmed successfully, please login in below")
         return redirect('base')
     else:

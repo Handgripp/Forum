@@ -29,3 +29,10 @@ class UserRepository:
         user.last_login = timezone.now()
         user.save(update_fields=["last_login"])
         return user
+
+    @staticmethod
+    def change_to_active(user_id):
+        User = get_user_model()
+        user = User.objects.get(_id=ObjectId(user_id))
+        user.is_active = True
+        user.save()
